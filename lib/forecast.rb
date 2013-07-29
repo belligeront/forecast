@@ -6,7 +6,6 @@ require 'yaml'
 module Forecast
   class Forecast
 
-    require 'pry'; binding.pry
     CONFIG = YAML.load_file('config.yml')
     Lat = CONFIG['latitude']
     Lng = CONFIG['longitude']
@@ -25,7 +24,7 @@ module Forecast
       puts "Currently #{current_temp.round}F / #{current_temp_celc.round}C"
       puts "#{minutely_summary} #{hourly_summary}"
       if rain_in_next_hour?
-        puts "10 minutes with least rain in next hour: #{print_ten_min_window}"
+        puts "Ten minutes with least rain during the next hour: #{print_ten_min_window}."
       end
     end
 
@@ -69,10 +68,15 @@ module Forecast
     end
 
     def index_of_starting_minute_with_lowest_precip_intensity(mins)
-      (0..60 - mins).map do |starting_min|
+      precip_by_start_minute = (0..60 - mins).map do |starting_min|
         range = (starting_min..starting_min + mins)
         minutely_data[range].reduce(0) { |sum, minute| sum + minute[:precipIntensity] }
-      end.min
+      end
+      index_of_min_value(precip_by_start_minute)
+    end
+
+    def index_of_min_value(arr)
+      arr.index(arr.min)
     end
 
     def current_temp
