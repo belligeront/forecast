@@ -21,8 +21,8 @@ module Forecast
     end
 
     def summary
-      puts "Currently #{current_temp.round}F / #{current_temp_celc.round}C"
       puts "#{minutely_summary} #{hourly_summary}"
+      puts "Currently #{current_temp.round}F / #{current_temp_celc.round}C."
       if rain_in_next_hour?
         puts "Ten minutes with least rain during the next hour: #{print_ten_min_window}."
       end
