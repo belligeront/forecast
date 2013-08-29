@@ -22,11 +22,11 @@ module Forecast
     def fetch(location)
       @latitude = URI.escape(location.latitude.to_s)
       @longitude = URI.escape(location.longitude.to_s)
-      parse_json(raw_json)
+      data = parse_json(raw_json)
+      Result.new(data)
     end
 
     private
-
 
     def uri
       "#{uri_endpoint}#{api_key}/#{latitude},#{longitude}"
