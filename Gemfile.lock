@@ -17,6 +17,7 @@ GEM
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.14.1)
     slop (3.4.5)
+    vcr (2.5.0)
 
 PLATFORMS
   ruby
@@ -24,3 +25,4 @@ PLATFORMS
 DEPENDENCIES
   pry
   rspec
+  vcr
