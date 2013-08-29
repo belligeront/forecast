@@ -18,7 +18,9 @@ module Forecast
 
     subject { @forecast }
     it { should respond_to(:summary) }
-    it { should respond_to(:location) }
+    it "knows it's location" do
+      expect(@forecast.location).to eq @location
+    end
 
     describe "getting data from the Forecast Client" do
       it 'sends a :fetch message to a Client object' do

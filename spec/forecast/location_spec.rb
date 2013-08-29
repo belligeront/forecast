@@ -2,7 +2,6 @@ require_relative '../../lib/forecast'
 
 module Forecast
   describe Location do
-
     before do
       @location = Location.new({latitude: 43.086880, longitude: -89.373269})
     end
