@@ -1,5 +1,6 @@
 require_relative '../../lib/forecast'
 require_relative '../../lib/forecast/forecast_result'
+require_relative '../vcr_helper'
 
 module Forecast
   describe Client do
@@ -12,9 +13,10 @@ module Forecast
 
     describe '.fetch' do
       it "returns a Forecast::Result object with the results" do
-        @api_call = Client.new
-        @api_call.stub(:raw_json) { File.read 'spec/assets/sample_weather.json' }
-        @api_call.fetch(@location_double).should be_instance_of(Result)
+        VCR.use_cassette("client_spec_forecast") do
+          @api_call = Client.new
+          @api_call.fetch(@location_double).should be_instance_of(Result)
+        end
       end
     end
   end
