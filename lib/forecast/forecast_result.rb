@@ -16,8 +16,8 @@ module Forecast
       @data[:hourly][:summary]
     end
 
-    def rain_in_next_hour?
-      @data[:hourly][:data][0][:precipProbability] >= 0.1
+    def prob_rain_next_hour
+      @data[:hourly][:data][0][:precipProbability]
     end
 
     def minutely_precip_prob

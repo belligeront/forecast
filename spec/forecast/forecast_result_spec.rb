@@ -8,6 +8,13 @@ module Forecast
       expect(result.current_temp).to eq 32.0
     end
 
+    it "knows the chance of rain for the next hour" do
+      data = { hourly:
+               { data:
+                 [ { precipProbability: 0.5 } ] } }
+      result = Result.new(data)
+      expect(result.prob_rain_next_hour).to eq 0.5
+    end
 
     context "summarizing the data in words" do
       let(:summary) { double(String) }
@@ -22,24 +29,6 @@ module Forecast
         data = { hourly: { summary: summary }}
         result = Result.new(data)
         expect(result.hourly_summary).to eq summary
-      end
-    end
-
-    describe "#rain_in_next_hour?" do
-      it "returns true when there's a reasonable chance" do
-        data = { hourly:
-                 { data:
-                   [ { precipProbability: 0.5 } ] } }
-        result = Result.new(data)
-        expect(result.rain_in_next_hour?).to eq true
-      end
-
-      it "returns false when miniscule chance of rain" do
-        data = { hourly:
-                 { data:
-                   [ { precipProbability: 0.01 } ] } }
-        result = Result.new(data)
-        expect(result.rain_in_next_hour?).to eq false
       end
     end
 
