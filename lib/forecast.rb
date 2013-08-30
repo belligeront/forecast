@@ -47,12 +47,7 @@ module Forecast
     private
 
     def print_ten_min_window
-      range = lowest_precip_intensity_next_hour(10)
-      "#{format_time(range.start_time)} - #{format_time(range.end_time)}"
-    end
-
-    def format_time(time)
-      time.strftime("%l:%M %P")
+      lowest_precip_intensity_next_hour(10).readable_string
     end
 
     def current_temp_celc

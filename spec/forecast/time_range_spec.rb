@@ -18,5 +18,14 @@ module Forecast
         thirty_mins.duration.should be_within(1).of(30)
       end
     end
+
+    describe "#print" do
+      it "prints the range in a human readable form" do
+        range = TimeRange.new(Time.now, thirty_mins_from_now)
+        formated_start  = range.start_time.strftime("%l:%M %P")
+        formated_end  = range.end_time.strftime("%l:%M %P")
+        expect(range.readable_string).to match "#{formated_start} - #{formated_end}"
+      end
+    end
   end
 end
