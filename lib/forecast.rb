@@ -1,4 +1,6 @@
 require_relative 'forecast/forecast_client'
+require_relative 'forecast/forecast_result'
+require_relative 'forecast/minutely_result'
 require_relative 'forecast/location'
 require_relative 'forecast/time_range'
 require 'yaml'
@@ -10,77 +12,47 @@ module Forecast
     Lat = CONFIG['latitude']
     Lng = CONFIG['longitude']
 
-    attr_reader :location
+    attr_reader :location, :current_temp, :minutely_summary, :hourly_summary,
+                :prob_rain_next_hour, :minutely_results
 
     def initialize(location = nil)
       @location = location || Location.new({latitude: Lat, longitude: Lng})
     end
 
     def get(client = Client.new)
-      @data = client.fetch(location)
+      result = client.fetch(location)
+      @current_temp = result.current_temp
+      @minutely_summary = result.minutely_summary
+      @hourly_summary = result.hourly_summary
+      @prob_rain_next_hour = result.prob_rain_next_hour
+      @minutely_results = result.minutely_results
+    end
+
+    def rain_next_hour?
+      prob_rain_next_hour >= 0.1
     end
 
     def summary
       puts "#{minutely_summary} #{hourly_summary}"
       puts "Currently #{current_temp.round}F / #{current_temp_celc.round}C."
-      if rain_in_next_hour?
-        puts "Ten minutes with least rain during the next hour: #{print_ten_min_window}."
+      if rain_next_hour?
+        puts "Ten mins with least rain during next hour: #{print_ten_min_window}."
       end
+    end
+
+    def lowest_precip_intensity_next_hour(mins)
+      minutely_results.least_precip_range(mins)
     end
 
     private
 
-    def rain_in_next_hour?
-      hourly_data[0][:precipProbability] > 0.1
-    end
-
-    def minutely_summary
-      @data[:minutely][:summary]
-    end
-
-    def hourly_summary
-      @data[:hourly][:summary]
-    end
-
-    # Returns array with 61 elements (60 mintues) - [0] is the current minute
-    def minutely_data
-      @data[:minutely][:data]
-    end
-
-    # Returns array with 49 elements (48 hours) - [0] is the current hour
-    def hourly_data
-      @data[:hourly][:data]
-    end
-
     def print_ten_min_window
-      range = find_range_in_next_hour_with_lowest_precip(10)
+      range = lowest_precip_intensity_next_hour(10)
       "#{format_time(range.start_time)} - #{format_time(range.end_time)}"
     end
 
     def format_time(time)
       time.strftime("%l:%M %P")
-    end
-
-    def find_range_in_next_hour_with_lowest_precip(mins)
-      index = index_of_starting_minute_with_lowest_precip_intensity(mins)
-      staring_time = minutely_data[index][:time]
-      TimeRange.new(Time.at(staring_time), Time.at(staring_time + mins * 60))
-    end
-
-    def index_of_starting_minute_with_lowest_precip_intensity(mins)
-      precip_by_start_minute = (0..60 - mins).map do |starting_min|
-        range = (starting_min..starting_min + mins)
-        minutely_data[range].reduce(0) { |sum, minute| sum + minute[:precipIntensity] }
-      end
-      index_of_min_value(precip_by_start_minute)
-    end
-
-    def index_of_min_value(arr)
-      arr.index(arr.min)
-    end
-
-    def current_temp
-      @data[:currently][:temperature]
     end
 
     def current_temp_celc
