@@ -1,5 +1,4 @@
 require_relative '../../lib/forecast'
-require_relative '../../lib/forecast/forecast_result'
 require_relative '../vcr_helper'
 
 describe "integration betweent Forecast::Client & Forecast::Result" do
@@ -16,9 +15,7 @@ describe "integration betweent Forecast::Client & Forecast::Result" do
       expect(result.minutely_summary).to be_kind_of String
       expect(result.hourly_summary).to be_kind_of String
       expect(result.prob_rain_next_hour).to be >= 0
-      result.minutely_precip_prob.each do |probability|
-        expect(probability).to be >= 0
-      end
+      expect(result.minutely_results).to be_kind_of Forecast::MinutelyResult
     end
   end
 end

@@ -1,4 +1,5 @@
 require_relative '../../lib/forecast/forecast_result'
+require_relative '../../lib/forecast/minutely_result'
 
 module Forecast
   describe Result do
@@ -32,14 +33,12 @@ module Forecast
       end
     end
 
-    it "knows minutely precipitation intensities" do
-      data = { minutely:
-               { data:
-                 [ {precipIntensity: 0.1},
-                   {precipIntensity: 0.2},
-                   {precipIntensity: 0.3}] }}
-      result = Result.new(data)
-      expect(result.minutely_precip_prob).to eq [0.1, 0.2, 0.3]
+    describe "#lowest_precip_intensity" do
+      it "knows minutely precipitation intensities" do
+        data = { minutely: {  data: double}}
+        result = Result.new(data)
+        expect(result.minutely_results).to be_kind_of MinutelyResult
+      end
     end
   end
 end

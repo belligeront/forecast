@@ -20,11 +20,14 @@ module Forecast
       @data[:hourly][:data][0][:precipProbability]
     end
 
-    def minutely_precip_prob
-      minutely_data = @data[:minutely][:data]
-      minutely_data.map do |minute|
-        minute.fetch :precipIntensity
-      end
+    def minutely_results
+      MinutelyResult.new(minutely_data)
+    end
+
+    private
+
+    def minutely_data
+      @data[:minutely][:data]
     end
   end
 end
